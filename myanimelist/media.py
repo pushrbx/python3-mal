@@ -621,7 +621,7 @@ class Media(Base, metaclass=abc.ABCMeta):
         """
         characters_page = self.session.session.get(
             'https://myanimelist.net/' + self.__class__.__name__.lower() + '/' + str(
-                self.id) + '/' + utilities.urlencode(self.title) + '/characters').text
+                self.id) + '/' + utilities.urlencode(self.title).replace('/', '_') + '/characters').text
         self.set(self.parse_characters(utilities.get_clean_dom(characters_page)))
         return self
 

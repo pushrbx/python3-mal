@@ -45,12 +45,12 @@ class MediaList(Base, collections.Mapping, metaclass=abc.ABCMeta):
         self._stats = None
 
     # subclasses must define a list type, ala "anime" or "manga"
-    @abc.abstractproperty
+    @abc.abstractmethod
     def type(self):
         pass
 
     # a list verb ala "watch", "read", etc
-    @abc.abstractproperty
+    @abc.abstractmethod
     def verb(self):
         pass
 

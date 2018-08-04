@@ -5,4 +5,4 @@ install:
   - python setup.py install
 script: nosetests-3.4
 env:
-  - RUNENV=travis MAL_USERNAME=py3mal MAL_PASSWORD=nepszerujelszo TESTS_SQUID_ADDRESS=mal-squid.k8s.pushrbx.net:3128
+  - RUNENV=travis MAL_USERNAME=py3mal1 MAL_PASSWORD=KomplikaltJelszo TESTS_SQUID_ADDRESS=mal-squid.k8s.pushrbx.net:3128
