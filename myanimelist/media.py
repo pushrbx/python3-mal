@@ -170,7 +170,10 @@ class Media(Base, metaclass=abc.ABCMeta):
 
         try:
             picture_tag = info_panel_first.find('.//img')
-            media_info['picture'] = picture_tag.get('src').encode("utf-8").decode("utf-8")
+            if picture_tag is not None:
+                media_info['picture'] = picture_tag.get('src').encode("utf-8").decode("utf-8")
+            else:
+                media_info['picture'] = None
         except:
             if not self.session.suppress_parse_exceptions:
                 raise
