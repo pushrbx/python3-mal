@@ -110,15 +110,14 @@ class Session(object):
         if self.session is None:
             return False
 
-        panel_url = 'https://myanimelist.net/panel.php'
+        panel_url = 'https://myanimelist.net'
         panel = self.session.get(panel_url)
         html = ht.fromstring(panel.content.decode("utf-8"))
 
         if 'Logout' in panel.content.decode("utf-8") or len(html.xpath(".//*[text()[contains(.,'Logout')]]")) > 0:
             return True
 
-        # //*[@id="header-menu"]/div[7]/div/ul/li[8]/form/a
-        if html.find("./body/div[1]/div[3]/div[1]/div/div[2]/ul/li[3]/form/a[1]") is not None:
+        if len(html.xpath("//form[@action='https://myanimelist.net/logout.php']")) > 0:
             return True
 
         return False
@@ -172,7 +171,12 @@ class Session(object):
         self.session.headers.update(mal_headers)
         if "MALHLOGSESSID" in cookies.keys():
             self.session.cookies = cookies
-        r = self.session.post('https://myanimelist.net/login.php', data=mal_payload)
+        r = self.session.post('https://myanimelist.net/login.php?from=/', data=mal_payload)
+
+        x = ht.fromstring(r.content.decode('utf-8'))
+        if len(x.xpath("//div[@class='badresult']")) > 0:
+            print('Captcha is required to login. Please login first on the website and try again.')
+
         # remove content type:
         self.session.headers.pop("Content-Type")
         return self
