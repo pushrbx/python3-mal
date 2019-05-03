@@ -183,25 +183,24 @@ class Media(Base, metaclass=abc.ABCMeta):
             media_info['alternative_titles'] = {}
             alt_titles_results = info_panel_first.xpath(".//h2[text()[contains(.,'Alternative Titles')]]")
 
-            if len(alt_titles_results) == 0:
-                raise MalformedMediaPageError(self.id, media_page, message="Could not find the alternative titles")
+            if len(alt_titles_results) != 0:
+                alt_titles_header = alt_titles_results[0]
+                if alt_titles_header is not None:
+                    next_tag = utilities.css_select("h2 + div.spaceit_pad", alt_titles_header)[0]
+                    while True:
+                        if next_tag is None or len(utilities.css_select("span.dark_text", next_tag)) == 0:
+                            # not a language node, break.
+                            break
+                        # get language and remove the node.
+                        language = next_tag.find(".//span").text[:-1]
+                        names = next_tag.xpath(".//text()")[-1].strip().split(', ')
+                        media_info['alternative_titles'][language] = names
+                        temp = next_tag.xpath("./following-sibling::div[@class='spaceit_pad']")
+                        if len(temp) == 0:
+                            break
+                        else:
+                            next_tag = temp[0]
 
-            alt_titles_header = alt_titles_results[0]
-            if alt_titles_header is not None:
-                next_tag = utilities.css_select("h2 + div.spaceit_pad", alt_titles_header)[0]
-                while True:
-                    if next_tag is None or len(utilities.css_select("span.dark_text", next_tag)) == 0:
-                        # not a language node, break.
-                        break
-                    # get language and remove the node.
-                    language = next_tag.find(".//span").text[:-1]
-                    names = next_tag.xpath(".//text()")[-1].strip().split(', ')
-                    media_info['alternative_titles'][language] = names
-                    temp = next_tag.xpath("./following-sibling::div[@class='spaceit_pad']")
-                    if len(temp) == 0:
-                        break
-                    else:
-                        next_tag = temp[0]
         except:
             if not self.session.suppress_parse_exceptions:
                 raise

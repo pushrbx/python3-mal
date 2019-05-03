@@ -202,12 +202,14 @@ class User(Base):
                 raise
 
         try:
-            # the user ID is always present in the blogfeed link.
+            # the user ID is always present in friend request link.
             user_info['id'] = -1
-            temp = info_panel_first.xpath(".//a[text()[contains(.,'Blog Feed')]]")
+            temp = info_panel_first.xpath(".//a[@id='request']")
             if len(temp) > 0:
                 all_comments_link = temp[0]
-                user_info['id'] = int(all_comments_link.get('href').split('&id=')[1])
+                all_comments_link_parts = all_comments_link.get('href').split('&id=')
+                if len(all_comments_link_parts) > 1:
+                    user_info['id'] = int(all_comments_link.get('href').split('&id=')[1])
         except:
             if not self.session.suppress_parse_exceptions:
                 raise
