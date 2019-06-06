@@ -63,6 +63,7 @@ class User(Base):
         self.username = username
         if not isinstance(self.username, str) or len(self.username) < 1:
             raise InvalidUserError(self.username)
+        self._id = None
         self._picture = None
         self._favorite_anime = None
         self._favorite_manga = None
@@ -202,14 +203,15 @@ class User(Base):
                 raise
 
         try:
-            # the user ID is always present in friend request link.
+            # the user ID is always present in report link.
             user_info['id'] = -1
-            temp = info_panel_first.xpath(".//a[@id='request']")
+            temp = user_page.xpath('./body/div[1]/div[3]/div[3]/div[1]/h1/a')
             if len(temp) > 0:
                 all_comments_link = temp[0]
                 all_comments_link_parts = all_comments_link.get('href').split('&id=')
                 if len(all_comments_link_parts) > 1:
                     user_info['id'] = int(all_comments_link.get('href').split('&id=')[1])
+                    self._id = user_info['id']
         except:
             if not self.session.suppress_parse_exceptions:
                 raise

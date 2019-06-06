@@ -21,7 +21,7 @@ class InvalidMediaListError(InvalidBaseError):
 
 
 class MediaList(Base, collections.Mapping, metaclass=abc.ABCMeta):
-    __id_attribute = "username"
+    _id_attribute = "username"
 
     def __getitem__(self, media):
         return self.list[media]
