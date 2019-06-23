@@ -291,11 +291,10 @@ class Anime(media.Media):
         try:
             temp = info_panel_first.xpath(".//div/span[text()[contains(.,'Premiered:')]]")
             anime_info['premiered'] = ''
-            if len(temp) == 0:            
-                raise Exception("Couldnt find premiered tag.")
-            premiered_tag = "".join(temp[0].getparent().xpath(".//text()")).strip().replace('\n', '') \
-                .split(": ")[-1].rstrip()
-            anime_info['premiered'] = premiered_tag.strip()
+            if len(temp) > 0:            
+                premiered_tag = "".join(temp[0].getparent().xpath(".//text()")).strip().replace('\n', '') \
+                    .split(": ")[-1].rstrip()
+                anime_info['premiered'] = premiered_tag.strip()
         except:
             if not self.session.suppress_parse_exceptions:
                 raise
