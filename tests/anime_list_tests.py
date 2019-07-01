@@ -18,6 +18,7 @@ else:
 
 
 class testAnimeListClass(object):
+    obsolete = 1
     @classmethod
     def setUpClass(self):
         self.session = session.Session(proxy_settings=get_proxy_settings())

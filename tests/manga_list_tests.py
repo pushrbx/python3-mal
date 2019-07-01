@@ -21,6 +21,7 @@ else:
 
 
 class testMangaListClass(object):
+    obsolete = 1
     @classmethod
     def setUpClass(self):
         self.session = myanimelist.session.Session(proxy_settings=get_proxy_settings())

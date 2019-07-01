@@ -115,6 +115,9 @@ class User(Base):
         if general_detail_ul is None:
             general_detail_ul = user_page.find("./body/div[1]/div[1]/div[3]/div[2]/div/div[1]/div/ul[1]")
 
+        if general_detail_ul is None:
+            general_detail_ul = user_page.find("./body/div[1]/div[3]/div[4]/div[2]/div/div[1]/div/ul[1]")
+
         last_online_elt = general_detail_ul.xpath(".//span[text()[contains(.,'Last Online')]]")[0]
         if last_online_elt is not None:
             try:
@@ -159,7 +162,7 @@ class User(Base):
             user_info['website'] = None
             try:
                 temp = user_page.xpath(
-                        "./body/div[1]/div[3]/div[3]/div[2]/div/div[1]/div/h4[text()[contains(.,'Also Available')]]")
+                        "./body/div[1]/div[3]/div[4]/div[2]/div/div[1]/div/h4[text()[contains(.,'Also Available')]]")
                 if len(temp) > 0:
                     website = temp[0]
                 else:
@@ -205,7 +208,7 @@ class User(Base):
         try:
             # the user ID is always present in report link.
             user_info['id'] = -1
-            temp = user_page.xpath('./body/div[1]/div[3]/div[3]/div[1]/h1/a')
+            temp = user_page.xpath('./body/div[1]/div[3]/div[4]/div[1]/h1/a')
             if len(temp) > 0:
                 all_comments_link = temp[0]
                 all_comments_link_parts = all_comments_link.get('href').split('&id=')

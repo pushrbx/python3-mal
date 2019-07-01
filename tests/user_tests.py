@@ -80,7 +80,7 @@ class testUserClass(object):
 
     def testPicture(self):
         assert isinstance(self.shal.picture,
-                          str) and self.shal.picture == u'https://myanimelist.cdn-dena.com/images/userimages/64611.jpg'
+                          str) and self.shal.picture == u'https://cdn.myanimelist.net/images/userimages/64611.jpg'
         assert isinstance(self.mona.picture, str)
 
     def testFavoriteAnime(self):
