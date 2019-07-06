@@ -28,6 +28,7 @@ class testAnimeClass(object):
         self.sunrise = self.session.producer(14)
         self.bandai = self.session.producer(23)
         self.fantasia = self.session.producer(24)
+        self.funimation = self.session.producer(102)
         self.action = self.session.genre(1)
         self.hex = self.session.character(94717)
         self.hex_va = self.session.person(5766)
@@ -36,6 +37,7 @@ class testAnimeClass(object):
 
         self.spicy_wolf = self.session.anime(2966)
         self.kadokawa = self.session.producer(352)
+        self.imagin = self.session.producer(75)
         self.romance = self.session.genre(22)
         self.holo = self.session.character(7373)
         self.holo_va = self.session.person(70)
@@ -43,19 +45,21 @@ class testAnimeClass(object):
         self.adventure_tag = self.session.tag(u'adventure')
 
         self.space_dandy = self.session.anime(20057)
-        self.funi = self.session.producer(102)
+        self.bones = self.session.producer(4)
         self.scifi = self.session.genre(24)
         self.toaster = self.session.character(110427)
         self.toaster_va = self.session.person(611)
 
         self.totoro = self.session.anime(523)
         self.gkids = self.session.producer(783)
+        self.studio_ghibli = self.session.producer(21)
         self.supernatural = self.session.genre(37)
         self.satsuki = self.session.character(267)
         self.satsuki_va = self.session.person(1104)
 
         self.prisma = self.session.anime(18851)
         self.silver_link = self.session.producer(300)
+        self.sentai_filmworks = self.session.producer(376)
         self.fantasy = self.session.genre(10)
         self.ilya = self.session.character(503)
         self.ilya_va = self.session.person(117)
@@ -64,6 +68,7 @@ class testAnimeClass(object):
         self.latest_anime = anime.Anime.newest(self.session)
 
         self.non_tagged_anime = self.session.anime(10448)
+        self.mobile_suit_gundam_f91 = self.session.anime(88)
 
     @raises(TypeError)
     def testNoIDInvalidAnime(self):
@@ -326,6 +331,49 @@ class testAnimeClass(object):
         assert isinstance(self.bebop.promotion_videos, list)
         assert len(self.bebop.promotion_videos) > 0
         assert self.spicy_wolf.promotion_videos[0]["title"] == "PV English dub version"
+
+    def testSource(self):
+        assert self.spicy_wolf.source == u'Light novel'
+        assert self.bebop.source == u'Original'
+        assert self.totoro.source == u'Original'
+        assert self.space_dandy.source == u'Original'
+        assert self.prisma.source == u'Manga'
+        assert self.mobile_suit_gundam_f91.source == u''
+  
+    def testLicensors(self):
+        assert isinstance(self.bebop.licensors, list) and len(self.bebop.licensors) > 0
+        assert self.funimation in self.bebop.licensors
+        assert isinstance(self.spicy_wolf.licensors, list) and len(self.spicy_wolf.licensors) > 0
+        assert self.funimation in self.spicy_wolf.licensors
+        assert isinstance(self.space_dandy.licensors, list) and len(self.space_dandy.licensors) > 0
+        assert self.funimation in self.space_dandy.licensors
+        assert isinstance(self.totoro.licensors, list) and len(self.totoro.licensors) > 0
+        assert self.gkids in self.totoro.licensors
+        assert isinstance(self.prisma.licensors, list) and len(self.prisma.licensors) >= 0
+        assert self.sentai_filmworks in self.prisma.licensors
+        assert isinstance(self.non_tagged_anime.licensors, list) and len(self.non_tagged_anime.licensors) == 0
+        assert not self.non_tagged_anime.licensors
+
+    def testStudios(self):
+        assert isinstance(self.bebop.studios, list) and len(self.bebop.studios) > 0
+        assert self.sunrise in self.bebop.studios
+        assert isinstance(self.spicy_wolf.studios, list) and len(self.spicy_wolf.studios) > 0
+        assert self.imagin in self.spicy_wolf.studios
+        assert isinstance(self.space_dandy.studios, list) and len(self.space_dandy.studios) > 0
+        assert self.bones in self.space_dandy.studios
+        assert isinstance(self.totoro.studios, list) and len(self.totoro.studios) > 0
+        assert self.studio_ghibli in self.totoro.studios
+        assert isinstance(self.prisma.studios, list) and len(self.prisma.studios) >= 0
+        assert self.silver_link in self.prisma.studios
+        assert isinstance(self.non_tagged_anime.studios, list) and len(self.non_tagged_anime.studios) == 0
+        assert not self.non_tagged_anime.studios
+
+    def testPremiered(self):
+        assert self.spicy_wolf.premiered == u'Winter 2008'
+        assert self.bebop.premiered == u'Spring 1998'
+        assert self.totoro.premiered == u''
+        assert self.space_dandy.premiered == u'Winter 2014'
+        assert self.prisma.premiered == u''
 
     # def testPopularTags(self):
     #     assert len(self.bebop.popular_tags) > 0 and self.space_tag in self.bebop.popular_tags
