@@ -256,7 +256,7 @@ class MediaList(Base, collections.Mapping, metaclass=abc.ABCMeta):
         return list_info
 
     def load(self):
-        media_list = self.session.session.get('https://myanimelist.net/malappinfo.php?' + urllib.parse.urlencode(
+        media_list = self.session.get('https://myanimelist.net/malappinfo.php?' + urllib.parse.urlencode(
             {'u': self.username, 'status': 'all', 'type': self.type})).text
         self.set(self.parse(media_list))
         return self

@@ -46,7 +46,7 @@ class Genre(Base):
         return genre_info
 
     def load(self):
-        genre = self.session.session.get('https://myanimelist.net/anime/genre/' + str(self.id)).text
+        genre = self.session.get('https://myanimelist.net/anime/genre/' + str(self.id)).text
         self.set(self.parse(utilities.get_clean_dom(genre)))
         pass
 

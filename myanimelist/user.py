@@ -40,7 +40,7 @@ class User(Base):
         :rtype: str
         :return: The given user's username.
         """
-        comments_page = session.session.get(
+        comments_page = session.get(
                 'https://myanimelist.net/comments.php?' + urllib.parse.urlencode({'id': int(user_id)})).text
         comments_page = utilities.get_clean_dom(comments_page)
         username_elt = comments_page.find('.//h1')
@@ -643,7 +643,7 @@ class User(Base):
         :return: Current user object.
 
         """
-        user_profile = self.session.session.get(
+        user_profile = self.session.get(
                 'https://myanimelist.net/profile/' + utilities.urlencode(self.username)).text
         self.set(self.parse(utilities.get_clean_dom(user_profile)))
         return self
@@ -659,7 +659,7 @@ class User(Base):
         # collect all reviews over all pages.
         review_collection = []
         while True:
-            user_reviews = self.session.session.get('https://myanimelist.net/profile/' + utilities.urlencode(
+            user_reviews = self.session.get('https://myanimelist.net/profile/' + utilities.urlencode(
                     self.username) + '/reviews/?' + urllib.parse.urlencode({'p': page})).text
             if user_reviews is None:
                 break
@@ -685,7 +685,7 @@ class User(Base):
         :return: Current user object.
 
         """
-        user_recommendations = self.session.session.get(
+        user_recommendations = self.session.get(
                 'https://myanimelist.net/profile/' + utilities.urlencode(self.username) + '/recommendations').text
         self.set(self.parse_recommendations(utilities.get_clean_dom(user_recommendations)))
         return self
@@ -697,7 +697,7 @@ class User(Base):
         :return: Current user object.
 
         """
-        user_clubs = self.session.session.get(
+        user_clubs = self.session.get(
                 'https://myanimelist.net/profile/' + utilities.urlencode(self.username) + '/clubs').text
         self.set(self.parse_clubs(utilities.get_clean_dom(user_clubs)))
         return self
@@ -709,7 +709,7 @@ class User(Base):
         :return: Current user object.
 
         """
-        user_friends = self.session.session.get(
+        user_friends = self.session.get(
                 'https://myanimelist.net/profile/' + utilities.urlencode(self.username) + '/friends').text
         self.set(self.parse_friends(utilities.get_clean_dom(user_friends)))
         return self

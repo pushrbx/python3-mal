@@ -318,7 +318,7 @@ class Character(Base):
         :return: Current character object.
 
         """
-        character = self.session.session.get('https://myanimelist.net/character/' + str(self.id)).text
+        character = self.session.get('https://myanimelist.net/character/' + str(self.id)).text
         self.set(self.parse(utilities.get_clean_dom(character)))
         return self
 
@@ -329,7 +329,7 @@ class Character(Base):
         :return: Current character object.
 
         """
-        character = self.session.session.get(
+        character = self.session.get(
                 'https://myanimelist.net/character/' + str(self.id) + '/' + utilities.urlencode(
                         self.name) + '/favorites').text
         self.set(self.parse_favorites(utilities.get_clean_dom(character)))
@@ -342,7 +342,7 @@ class Character(Base):
         :return: Current character object.
 
         """
-        character = self.session.session.get(
+        character = self.session.get(
                 'https://myanimelist.net/character/' + str(self.id) + '/' + utilities.urlencode(
                         self.name) + '/pictures').text
         self.set(self.parse_pictures(utilities.get_clean_dom(character)))
@@ -355,7 +355,7 @@ class Character(Base):
         :return: Current character object.
 
         """
-        character = self.session.session.get(
+        character = self.session.get(
                 'https://myanimelist.net/character/' + str(self.id) + '/' + utilities.urlencode(
                         self.name) + '/clubs').text
         self.set(self.parse_clubs(utilities.get_clean_dom(character)))

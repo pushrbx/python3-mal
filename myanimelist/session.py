@@ -23,6 +23,7 @@ from . import manga_list
 from .base import Error
 
 from lxml import html as ht
+import time
 
 
 class UnauthorizedError(Error):
@@ -324,3 +325,13 @@ class Session(object):
 
         """
         return user.User(self, username)
+
+    def get(self, url, **kwargs):
+        retries = 0
+        response = self.session.get(url, **kwargs)
+        while response.status_code == 429 and retries < 5:
+            time.sleep(7)
+            retries = retries + 1
+            response = self.session.get(url, **kwargs)
+
+        return response
