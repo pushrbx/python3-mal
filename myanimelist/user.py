@@ -41,7 +41,7 @@ class User(Base):
         :return: The given user's username.
         """
         comments_page = session.session.get(
-                'http://myanimelist.net/comments.php?' + urllib.parse.urlencode({'id': int(user_id)})).text
+                'https://myanimelist.net/comments.php?' + urllib.parse.urlencode({'id': int(user_id)})).text
         comments_page = utilities.get_clean_dom(comments_page)
         username_elt = comments_page.find('.//h1')
         if "'s Comments" not in username_elt.text:
@@ -107,16 +107,11 @@ class User(Base):
             raise InvalidUserError(self.id)
 
         # parse general details.
-        general_detail_ul = user_page.find("./body/div[1]/div[3]/div[3]/div[2]/div/div[1]/div/ul[1]")
-
-        if general_detail_ul is None:
-            general_detail_ul = user_page.find("./body/div[1]/div[3]/div[3]/div[2]/table//tr/td[1]/div/ul[1]")
-
-        if general_detail_ul is None:
-            general_detail_ul = user_page.find("./body/div[1]/div[1]/div[3]/div[2]/div/div[1]/div/ul[1]")
-
-        if general_detail_ul is None:
-            general_detail_ul = user_page.find("./body/div[1]/div[3]/div[4]/div[2]/div/div[1]/div/ul[1]")
+        general_detail_ul = user_page.xpath("//ul[@class='user-status border-top pb8 mb4']")
+        if len(general_detail_ul) > 0:
+            general_detail_ul = general_detail_ul[0]
+        else:
+            raise MalformedUserPageError('Cant find general details ul element.', user_page)
 
         last_online_elt = general_detail_ul.xpath(".//span[text()[contains(.,'Last Online')]]")[0]
         if last_online_elt is not None:
@@ -162,7 +157,7 @@ class User(Base):
             user_info['website'] = None
             try:
                 temp = user_page.xpath(
-                        "./body/div[1]/div[3]/div[4]/div[2]/div/div[1]/div/h4[text()[contains(.,'Also Available')]]")
+                        "//h4[contains(text(),'Also Available at')]")
                 if len(temp) > 0:
                     website = temp[0]
                 else:
@@ -208,7 +203,7 @@ class User(Base):
         try:
             # the user ID is always present in report link.
             user_info['id'] = -1
-            temp = user_page.xpath('./body/div[1]/div[3]/div[4]/div[1]/h1/a')
+            temp = user_page.xpath("//a[@class='header-right mt4 mr0']")
             if len(temp) > 0:
                 all_comments_link = temp[0]
                 all_comments_link_parts = all_comments_link.get('href').split('&id=')
@@ -246,7 +241,7 @@ class User(Base):
                             anime_link = cols[1].find('.//a')
                             link_parts = anime_link.get('href').split('/')
                             if "myanimelist.net" in anime_link.get('href'):
-                                # of the form http://myanimelist.net/anime/467/Ghost_in_the_Shell:_Stand_Alone_Complex
+                                # of the form https://myanimelist.net/anime/467/Ghost_in_the_Shell:_Stand_Alone_Complex
                                 user_info['favorite_anime'].append(
                                         self.session.anime(int(link_parts[4])).set({'title': anime_link.text}))
                             else:
@@ -267,7 +262,7 @@ class User(Base):
                             manga_link = cols[1].find('.//a')
                             link_parts = manga_link.get('href').split('/')
                             if "myanimelist.net" in manga_link.get('href'):
-                                # of the form http://myanimelist.net/manga/467/Ghost_in_the_Shell:_Stand_Alone_Complex
+                                # of the form https://myanimelist.net/manga/467/Ghost_in_the_Shell:_Stand_Alone_Complex
                                 user_info['favorite_manga'].append(
                                         self.session.manga(int(link_parts[4])).set({'title': manga_link.text}))
                             else:
@@ -288,7 +283,7 @@ class User(Base):
                             character_link = cols[1].find('.//a')
                             link_parts = character_link.get('href').split('/')
                             if "myanimelist.net" in character_link.get('href'):
-                                # of the form http://myanimelist.net/character/467/Ghost_in_the_Shell
+                                # of the form https://myanimelist.net/character/467/Ghost_in_the_Shell
                                 character = self.session.character(int(link_parts[4])).set(
                                         {'title': character_link.text})
                             else:
@@ -649,7 +644,7 @@ class User(Base):
 
         """
         user_profile = self.session.session.get(
-                'http://myanimelist.net/profile/' + utilities.urlencode(self.username)).text
+                'https://myanimelist.net/profile/' + utilities.urlencode(self.username)).text
         self.set(self.parse(utilities.get_clean_dom(user_profile)))
         return self
 
@@ -664,7 +659,7 @@ class User(Base):
         # collect all reviews over all pages.
         review_collection = []
         while True:
-            user_reviews = self.session.session.get('http://myanimelist.net/profile/' + utilities.urlencode(
+            user_reviews = self.session.session.get('https://myanimelist.net/profile/' + utilities.urlencode(
                     self.username) + '/reviews/?' + urllib.parse.urlencode({'p': page})).text
             if user_reviews is None:
                 break
@@ -691,7 +686,7 @@ class User(Base):
 
         """
         user_recommendations = self.session.session.get(
-                'http://myanimelist.net/profile/' + utilities.urlencode(self.username) + '/recommendations').text
+                'https://myanimelist.net/profile/' + utilities.urlencode(self.username) + '/recommendations').text
         self.set(self.parse_recommendations(utilities.get_clean_dom(user_recommendations)))
         return self
 
@@ -703,7 +698,7 @@ class User(Base):
 
         """
         user_clubs = self.session.session.get(
-                'http://myanimelist.net/profile/' + utilities.urlencode(self.username) + '/clubs').text
+                'https://myanimelist.net/profile/' + utilities.urlencode(self.username) + '/clubs').text
         self.set(self.parse_clubs(utilities.get_clean_dom(user_clubs)))
         return self
 
@@ -715,7 +710,7 @@ class User(Base):
 
         """
         user_friends = self.session.session.get(
-                'http://myanimelist.net/profile/' + utilities.urlencode(self.username) + '/friends').text
+                'https://myanimelist.net/profile/' + utilities.urlencode(self.username) + '/friends').text
         self.set(self.parse_friends(utilities.get_clean_dom(user_friends)))
         return self
 
