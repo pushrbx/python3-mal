@@ -533,9 +533,10 @@ class Media(Base, metaclass=abc.ABCMeta):
                     score_stats = {}
                     score_rows = score_stats_table.findall('tr')
                     for i in range(len(score_rows)):
-                        score_value = int(score_rows[i].find('td').text)
-                        score_stats[score_value] = int(
-                            score_rows[i].find('.//span/small').text.replace('(', '').replace(' votes)', ''))
+                        if score_rows[i].find('td').text is not None:
+                            score_value = int(score_rows[i].find('td').text)
+                            score_stats[score_value] = int(
+                                score_rows[i].find('.//span/small').text.replace('(', '').replace(' votes)', ''))
 
         except:
             if not self.session.suppress_parse_exceptions:

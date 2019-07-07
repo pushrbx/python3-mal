@@ -150,6 +150,10 @@ def parse_profile_date(text, suppress=False):
         except ValueError:
             pass
         try:
+            return datetime.datetime.strptime(text, '%b, %Y').date()
+        except ValueError:
+            pass
+        try:
             return datetime.datetime.strptime(text, "%b %d, %Y %I:%M %p")
         except ValueError:
             pass
@@ -199,3 +203,4 @@ def check_if_mal_response_is_empty(xmlel):
 
 def is_open_graph_style_stat_element(element):
     return element is not None and type(element) is HtmlElement and ((element.tail is not None and element.tail.strip() == "") or element.tail is None)
+    

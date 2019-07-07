@@ -48,12 +48,16 @@ class Anime(media.Media):
         self._episodes = None
         self._aired = None
         self._producers = None
+        self._licensors = None
+        self._studios = None
         self._duration = None
         self._rating = None
         self._voice_actors = None
         self._staff = None
         self._promotion_videos = None
         self._broadcast = None
+        self._source = None
+        self._premiered = None
 
     def parse_promotion_videos(self, media_page):
         container = utilities.css_select_first("#content", media_page)
@@ -170,6 +174,54 @@ class Anime(media.Media):
                 raise
 
         try:
+            temp = info_panel_first.xpath(".//div/span[text()[contains(.,'Licensors:')]]")
+            if len(temp) == 0:
+                raise Exception("Couldn't find licensors tag.")
+            licensors_tags = temp[0].getparent().xpath(".//a")
+            anime_info['licensors'] = []
+            for producer_link in licensors_tags:
+                if producer_link.text == 'add some':
+                    # MAL is saying "None found, add some".
+                    break
+                link_parts = producer_link.get('href').split('p=')
+                # of the form: /anime.php?p=14
+                if len(link_parts) > 1:
+                    anime_info['licensors'].append(
+                        self.session.producer(int(link_parts[1])).set({'name': producer_link.text}))
+                else:
+                    # of the form: /anime/producer/65
+                    link_parts = producer_link.get('href').split('/')
+                    anime_info['licensors'].append(
+                        self.session.producer(int(link_parts[-2])).set({"name": producer_link.text}))
+        except:
+            if not self.session.suppress_parse_exceptions:
+                raise
+
+        try:
+            temp = info_panel_first.xpath(".//div/span[text()[contains(.,'Studios:')]]")
+            if len(temp) == 0:
+                raise Exception("Couldn't find studios tag.")
+            studios_tags = temp[0].getparent().xpath(".//a")
+            anime_info['studios'] = []
+            for producer_link in studios_tags:
+                if producer_link.text == 'add some':
+                    # MAL is saying "None found, add some".
+                    break
+                link_parts = producer_link.get('href').split('p=')
+                # of the form: /anime.php?p=14
+                if len(link_parts) > 1:
+                    anime_info['studios'].append(
+                        self.session.producer(int(link_parts[1])).set({'name': producer_link.text}))
+                else:
+                    # of the form: /anime/producer/65
+                    link_parts = producer_link.get('href').split('/')
+                    anime_info['studios'].append(
+                        self.session.producer(int(link_parts[-2])).set({"name": producer_link.text}))
+        except:
+            if not self.session.suppress_parse_exceptions:
+                raise
+                
+        try:
             temp = info_panel_first.xpath(".//div/span[text()[contains(.,'Duration:')]]")
             if len(temp) == 0:
                 raise Exception("Couldn't find duration tag.")
@@ -220,6 +272,29 @@ class Anime(media.Media):
                     anime_info['broadcast']['hour'] = int(subtime_parts[0])
                     anime_info['broadcast']['minute'] = int(subtime_parts[1])
                     anime_info['broadcast']['timezone'] = time_parts[-1].replace('(', '').replace(')', '')
+        except:
+            if not self.session.suppress_parse_exceptions:
+                raise
+
+        try:
+            temp = info_panel_first.xpath(".//div/span[text()[contains(.,'Source:')]]")
+            anime_info['source'] = ''
+            if len(temp) == 0:            
+                raise Exception("Couldnt find source tag.")
+            source_tag = temp[0].xpath("../text()")[-1].strip()
+            if source_tag != "Unknown":
+                anime_info['source'] = source_tag
+        except:
+            if not self.session.suppress_parse_exceptions:
+                raise
+                
+        try:
+            temp = info_panel_first.xpath(".//div/span[text()[contains(.,'Premiered:')]]")
+            anime_info['premiered'] = ''
+            if len(temp) > 0:            
+                premiered_tag = "".join(temp[0].getparent().xpath(".//text()")).strip().replace('\n', '') \
+                    .split(": ")[-1].rstrip()
+                anime_info['premiered'] = premiered_tag.strip()
         except:
             if not self.session.suppress_parse_exceptions:
                 raise
@@ -375,6 +450,20 @@ class Anime(media.Media):
         """A list of :class:`myanimelist.producer.Producer` objects involved in this anime.
         """
         return self._producers
+    
+    @property
+    @loadable('load')
+    def licensors(self):
+        """A list of :class:`myanimelist.producer.Producer` objects involved in this anime.
+        """
+        return self._licensors
+    
+    @property
+    @loadable('load')
+    def studios(self):
+        """A list of :class:`myanimelist.producer.Producer` objects involved in this anime.
+        """
+        return self._studios
 
     @property
     @loadable('load')
@@ -389,6 +478,20 @@ class Anime(media.Media):
         """The broadcast time of this anime as a :class:`dict` if it is being aired currently.
         """
         return self._broadcast
+
+    @property
+    @loadable('load')
+    def source(self):
+        """Original source of this anime (Original, Light Novel, Visual Novel, Manga, Unknown).
+        """
+        return self._source
+
+    @property
+    @loadable('load')
+    def premiered(self):
+        """Airing season of this anime.
+        """
+        return self._premiered
 
     @property
     @loadable('load_videos')
