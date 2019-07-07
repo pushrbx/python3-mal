@@ -3,11 +3,9 @@ try:
 except ImportError:
   from distutils.core import setup
 
-try:
-    import pypandoc
-    long_description = pypandoc.convert('README.markdown', 'rst')
-except(IOError, ImportError):
-    long_description = open('README.markdown').read()
+
+long_description = open('README.markdown').read()
+
 
 config = {
   'name': 'python3-mal',
@@ -17,6 +15,7 @@ config = {
   'python_requires': '>=3.4, <4',
   'license': 'LICENSE.txt',
   'long_description': long_description,
+  'long_description_content_type': 'text/markdown',
   'url': 'https://github.com/pushrbx/python3-mal',
   'download_url': 'https://github.com/pushrbx/python3-mal/archive/master.zip',
   'author_email': 'contact@pushrbx.net',
