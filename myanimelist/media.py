@@ -171,7 +171,7 @@ class Media(Base, metaclass=abc.ABCMeta):
         try:
             picture_tag = info_panel_first.find('.//img')
             if picture_tag is not None:
-                media_info['picture'] = picture_tag.get('src').encode("utf-8").decode("utf-8")
+                media_info['picture'] = picture_tag.get('data-src').encode("utf-8").decode("utf-8")
             else:
                 media_info['picture'] = None
         except:

@@ -193,7 +193,7 @@ class User(Base):
         try:
             picture_tag = info_panel_first.find('.//img')
             if picture_tag is not None:
-                user_info['picture'] = picture_tag.get('src')
+                user_info['picture'] = picture_tag.get('data-src')
             else:
                 user_info['picture'] = None
         except:

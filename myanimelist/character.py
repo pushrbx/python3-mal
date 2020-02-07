@@ -90,7 +90,7 @@ class Character(Base):
 
         try:
             picture_tag = info_panel_first.find('.//img')
-            character_info['picture'] = picture_tag.get('src')
+            character_info['picture'] = picture_tag.get('data-src')
         except:
             if not self.session.suppress_parse_exceptions:
                 raise
@@ -270,7 +270,7 @@ class Character(Base):
             picture_table = second_col.find('.//table')
             character_info['pictures'] = []
             if picture_table is not None:
-                character_info['pictures'] = [img.get('src') for img in picture_table.findall('.//img')]
+                character_info['pictures'] = [img.get('data-src') for img in picture_table.findall('.//img')]
         except:
             if not self.session.suppress_parse_exceptions:
                 raise
