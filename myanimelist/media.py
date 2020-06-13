@@ -145,12 +145,11 @@ class Media(Base, metaclass=abc.ABCMeta):
                                               message="Could not find h1 element to find the title")
 
             title_tag_span = title_tag.find("span")
-            if title_tag_span is None and title_tag.text is not None:
-                media_info['title'] = title_tag.text.strip()
-            elif title_tag_span is not None and title_tag_span.text is not None:
-                media_info['title'] = title_tag_span.text.strip()
-            else:
+            title_text = utilities.extract_datasheet_title(title_tag_span)
+            if title_text is None or title_text == '':
                 raise MalformedMediaPageError(self.id, media_page, message="Could not find title in h1")
+            else:
+                media_info['title'] = title_text
         except:
             if not self.session.suppress_parse_exceptions:
                 raise
@@ -259,8 +258,16 @@ class Media(Base, metaclass=abc.ABCMeta):
             # there are two types of layout for scores: the ones with span elements with open graph / html5 attributes
             # and the ones without these special attributes
             if utilities.is_open_graph_style_stat_element(score_tag_results[0]):
-                score_text = utilities.css_select('span.dark_text + span', score_tag_results[0])[0].text
-                score_tag = utilities.css_select('span.dark_text + span', score_tag_results[0])[0]
+                first_found_span = utilities.css_select('span.dark_text + span', score_tag_results[0])[0]
+                if first_found_span.text is None:
+                    sub_span = first_found_span.find('span')
+                    if sub_span is not None and sub_span.text is not None:
+                        score_text = sub_span.text
+                    else:
+                        score_text = "N/A"
+                else:
+                    score_text = first_found_span.text
+                score_tag = first_found_span
 
                 rating_count_els = score_tag.getparent().xpath(".//span[3]|.//small/span[1]")
                 if len(rating_count_els) > 0:

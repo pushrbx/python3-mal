@@ -203,4 +203,18 @@ def check_if_mal_response_is_empty(xmlel):
 
 def is_open_graph_style_stat_element(element):
     return element is not None and type(element) is HtmlElement and ((element.tail is not None and element.tail.strip() == "") or element.tail is None)
-    
+
+
+def extract_datasheet_title(title_tag):
+    result = ""
+    title_tag_span = title_tag.find("span")
+    if title_tag_span is None and title_tag.text is not None:
+        result = title_tag.text.strip()
+    elif title_tag_span is not None and title_tag_span.text is not None:
+        result = title_tag_span.text.strip()
+    elif title_tag_span is not None and title_tag_span.text is None:
+        sub_span = title_tag_span.find("span")
+        if sub_span is not None:
+            result = sub_span.text.strip()
+
+    return result

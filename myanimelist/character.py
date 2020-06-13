@@ -79,7 +79,12 @@ class Character(Base):
             if full_name_tag is None:
                 # Page is malformed.
                 raise MalformedCharacterPageError(self.id, character_page, message="Could not find title div")
-            character_info['full_name'] = full_name_tag.text.strip()
+            title_tag_span = full_name_tag.find("span")
+            title_text = utilities.extract_datasheet_title(title_tag_span)
+
+            if title_text is None or title_text == '':
+                raise MalformedCharacterPageError(self.id, character_page, message="Could not find character name")
+            character_info['full_name'] = title_text
             info_panel_first = container.find(".//table/tr/td")
         except:
             if not self.session.suppress_parse_exceptions:

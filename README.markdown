@@ -13,7 +13,7 @@ There are automatic travis and teamcity builds on every last sunday of the month
 Dependencies
 ============
 
-- python 3.*
+- python 3.* (tested with 3.7 and 3.8)
 - pytz
 - requests
 - lxml

@@ -64,7 +64,9 @@ class Session(object):
     """Class to handle requests to MAL. Handles login, setting HTTP headers, etc.
     """
 
-    def __init__(self, username=None, password=None, user_agent="iMAL-iOS", proxy_settings=None):
+    def __init__(self, username=None, password=None,
+                 user_agent="Mozilla/5.0 (X11; Linux x86_64; rv:77.0) Gecko/20100101 Firefox/77.0",
+                 proxy_settings=None):
         """Creates a new instance of Session.
 
         :type username: str
